@@ -1,6 +1,7 @@
 package com.alfred.modifiers.mixin;
 
 import com.alfred.modifiers.Constants;
+import com.alfred.modifiers.ModifiersConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -16,7 +17,7 @@ public abstract class PlayerEntityMixin {
     @Redirect(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     private boolean modifyDamage(Entity instance, DamageSource source, float damage) {
         if (source.getAttacker() != null && source.getAttacker() instanceof PlayerEntity player) {
-            double totalCritChance = 0.0;
+            double totalCritChance = ModifiersConfig.baseCritChance;
             for (ItemStack equippedItem : source.getAttacker().getItemsEquipped())
                 if (equippedItem.hasNbt() && equippedItem.getNbt().contains(Constants.CRIT))
                     totalCritChance += equippedItem.getNbt().getDouble(Constants.CRIT);

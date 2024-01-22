@@ -19,10 +19,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class LootMixin {
     @Inject(method = "supplyInventory", at = @At("RETURN"))
     private void applyLootModifiers(Inventory inventory, LootContextParameterSet parameters, long seed, CallbackInfo ci) {
+        Random random = new Random(); // fix this later, don't have access to Minecraft's mappings or auto imports currently
+        random.seed(seed);
         for (int i = 0; i < inventory.size(); ++i) {
             if (!inventory.getStack(i).isEmpty()) {
                 ItemStack stack = ((LootableInventory) this).getStack(i);
-                if (Math.random() < ModifiersConfig.getInstance().generalModifierChance * (1 + parameters.getLuck())) {
+                if (random.nextFloat() < ModifiersConfig.getInstance().generalModifierChance * (1 + parameters.getLuck())) {
                     ItemModifier randomModifier = ItemModifierRegistry.getRandomModifier(stack);
                     if (randomModifier != null)
                         randomModifier.applyModifier(stack);

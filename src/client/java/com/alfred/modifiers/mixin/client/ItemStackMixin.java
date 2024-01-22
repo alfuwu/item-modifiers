@@ -83,11 +83,11 @@ public abstract class ItemStackMixin {
         boolean bl = false;
         if (player != null) {
             if (entityAttributeModifier.getId() == ItemAccessor.getAttackDamageModifierID() || entityAttributeModifier.getId().equals(MODIFIED_ATTACK_DAMAGE_MODIFIER_ID)) {
-                d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_DAMAGE); // in original ItemStack#getTooltip, this is where to mixin to modify attack damage
                 d += EnchantmentHelper.getAttackDamage((ItemStack) (Object) this, EntityGroup.DEFAULT);
                 bl = true;
             } else if (entityAttributeModifier.getId() == ItemAccessor.getAttackSpeedModifierID() || entityAttributeModifier.getId().equals(MODIFIED_ATTACK_SPEED_MODIFIER_ID)) {
-                d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED);
+                d += player.getAttributeBaseValue(EntityAttributes.GENERIC_ATTACK_SPEED); // same as above, but for speed
                 bl = true;
             }
         }
@@ -113,15 +113,16 @@ public abstract class ItemStackMixin {
 
     /**
      * @author alfred
-     * @reason need to overwrite how tooltips are displayed so that damage is shown vanilla style
+     * @reason need to overwrite how tooltips are displayed so that damage is shown vanilla style, probably can achieve the same behavior without overwriting the entire function, though I'm not sure exactly how
+     * help would be appreciated
      */
+     // rework required
     @Overwrite
     public List<Text> getTooltip(@Nullable PlayerEntity player, TooltipContext context) {
         List<Text> list = Lists.newArrayList();
         MutableText mutableText = Text.empty().append(this.getName()).formatted(this.getRarity().formatting);
-        if (this.hasCustomName()) {
+        if (this.hasCustomName())
             mutableText.formatted(Formatting.ITALIC);
-        }
 
         list.add(mutableText);
         if (!context.isAdvanced() && !this.hasCustomName() && this.isOf(Items.FILLED_MAP)) {
@@ -205,7 +206,7 @@ public abstract class ItemStackMixin {
                         }
                     }
 
-                    for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : damageModifiers)
+                    for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : damageModifiers) // always do damage modifiers first
                         applyEntry(list, player, entry);
                     for (Map.Entry<EntityAttribute, EntityAttributeModifier> entry : speedModifiers)
                         applyEntry(list, player, entry);
@@ -217,7 +218,9 @@ public abstract class ItemStackMixin {
 
         if (this.hasNbt()) {
             if (ModifiersConfig.getInstance().showModifierPercentages) {
-                // show modifier modifications here by getting item NBT data
+                for (String NbtID : Constants.values())
+                    if (this.getNbt().contains(NbtID))
+                        list.add(Text.translatable(String.format("modifiers.values.%s", /* check NBT type and get accordingly */0.0 < 0 ? "minus" : "plus"), /* check NBT type and get accordingly */0.0, NbtID.toLowerCase()))
             }
 
             if (isSectionVisible(i, ItemStack.TooltipSection.UNBREAKABLE) && this.nbt.getBoolean("Unbreakable"))

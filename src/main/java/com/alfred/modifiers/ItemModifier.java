@@ -25,18 +25,21 @@ public abstract class ItemModifier {
         NbtCompound modifier = itemStack.getOrCreateNbt();
         modifier.putString(Constants.ORIGINAL_NAME, itemStack.getName().getString()); // mixin to ItemStack renaming to remove this when renamed
         modifier.putString(Constants.ORIGINAL_ITEM, Registries.ITEM.getId(itemStack.getItem()).toString());
-        itemStack.setCustomName(Text.literal(getName() + ' ') // switch to translatable text
+        itemStack.setCustomName(Text.translatable("modifiers.itemmodifier." + getName().toLowerCase())
+                .append(Text.translatable("modifiers.space")))
                 .append(itemStack.getName())
-                .fillStyle(Style.EMPTY.withItalic(false))); // set to non-italic name
+                .fillStyle(Style.EMPTY.withItalic(false))); // add code to format name to be a red-ish color if modifier is a detrimental one
         modifier.putBoolean(Constants.HAS_MODIFIER, true);
     }
 
     public static void removeModifier(ItemStack itemStack) {
-        if (itemStack.hasNbt() && itemStack.getNbt().contains(Constants.HAS_MODIFIER) && itemStack.getNbt().getBoolean(Constants.HAS_MODIFIER) && itemStack.getNbt().contains(Constants.ORIGINAL_NAME)) {
-            itemStack.setCustomName(Text.literal(itemStack.getNbt().getString(Constants.ORIGINAL_NAME)) // switch to translatable text
-                    .fillStyle(Style.EMPTY.withItalic(itemStack.getItem().getName().equals(Text.literal(itemStack.getNbt().getString(Constants.ORIGINAL_NAME))))));
-            itemStack.removeSubNbt(Constants.ORIGINAL_NAME);
-            itemStack.removeSubNbt(Constants.HAS_MODIFIER);
+        if (itemStack.hasNbt() && itemStack.getNbt().contains(Constants.HAS_MODIFIER) && itemStack.getNbt().getBoolean(Constants.HAS_MODIFIER)) {
+            if (itemStack.getNbt().contains(Constants.ORIGINAL_NAME))
+                itemStack.setCustomName(Text.literal(itemStack.getNbt().getString(Constants.ORIGINAL_NAME)) // switch to translatable text
+                        .fillStyle(Style.EMPTY.withItalic(itemStack.getItem().getName().equals(Text.literal(itemStack.getNbt().getString(Constants.ORIGINAL_NAME))))));
+            for (String NbtID : Constants.values())
+                if (itemStack.getNbt().contains(NbtID))
+                    itemStack.getNbt().removeSubNbt(NbtID); // remove all custom NBT tags this mod implements, if you have a custom modifier implementation and don't want your custom values to be removed, do not include HasModifier:1b in your custom NBT data
         }
     }
 

@@ -18,8 +18,8 @@ public class ItemRendererMixin {
             boolean bl = renderMode == ModelTransformationMode.GUI || renderMode == ModelTransformationMode.GROUND || renderMode == ModelTransformationMode.FIXED;
             float f = itemStack.getNbt().getFloat(Constants.SIZE);
             stack.scale(f, f, f);
-            if (!bl)
-                stack.translate(0, 0, -f/35);
+            if (!bl) // don't translate model when its not in the player's hand
+                stack.translate(0, 0, -f/35); // approximately puts the model in the player's hand, might not work well at extremes
         }
         return stack;
     }

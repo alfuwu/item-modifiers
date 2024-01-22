@@ -1,6 +1,7 @@
 package com.alfred.modifiers.mixin;
 
 import com.alfred.modifiers.Constants;
+import com.alfred.modifiers.ModifiersConfig;
 import com.alfred.modifiers.access.ProjectileMixinAccessor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -57,7 +58,7 @@ public abstract class ProjectileMixin {
 
         @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
         private void readOwnerItemsNbt(NbtCompound nbt, CallbackInfo ci) {
-            if (ownerItems != null)
+            if (ownerItems != null) // this shouldn't happen but you can never plan for too many edge cases
                 return;
             if (nbt.contains("OwnerItems")) {
                 List<ItemStack> savedItems = new ArrayList<>();
@@ -97,7 +98,7 @@ public abstract class ProjectileMixin {
         @Redirect(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
         private boolean critDamage(Entity instance, DamageSource source, float damage) {
             if (source.getAttacker() != null && !(instance.isPlayer() && ((PlayerEntity) instance).getAbilities().creativeMode) && ownerItems != null) {
-                double totalCritChance = 0.0;
+                double totalCritChance = ModifiersConfig.baseCritChance;
                 for (ItemStack equippedItem : source.getAttacker().getItemsEquipped()) {
                     if (equippedItem.hasNbt() && equippedItem.getNbt().contains(Constants.CRIT))
                         totalCritChance += equippedItem.getNbt().getDouble(Constants.CRIT);
@@ -125,7 +126,7 @@ public abstract class ProjectileMixin {
 
         @Redirect(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;addVelocity(DDD)V"))
         private void modifyKnockback(LivingEntity instance, double deltaX, double deltaY, double deltaZ) {
-            instance.addVelocity(updateKnockback(deltaX), updateKnockback(deltaY), updateKnockback(deltaZ));
+            instance.addVelocity(updateKnockback(deltaX), updateKnockback(deltaY), updateKnockback(deltaZ)); // haha mobs go brrrrrrrrr
         }
 
         @ModifyVariable(method = "setVelocity", at = @At("HEAD"), ordinal = 0, argsOnly = true)
@@ -135,11 +136,11 @@ public abstract class ProjectileMixin {
             if (ownerItems != null)
                 for (ItemStack equippedItem : ownerItems)
                     if (equippedItem.hasNbt() && equippedItem.getNbt().contains(Constants.VELOCITY))
-                        speed *= equippedItem.getNbt().getDouble(Constants.VELOCITY);
+                        speed *= equippedItem.getNbt().getDouble(Constants.VELOCITY); // Minecraft does not like it when this value is high
             return speed;
         }
         @ModifyVariable(method = "setVelocity", at = @At("HEAD"), ordinal = 1, argsOnly = true)
-        private float setDivergence(float divergence) {
+        private float setDivergence(float divergence) { // this mixin isn't actually used in this mod, however it could be used to create a ranged weapon with custom NBT that has zero divergence, or maybe a wildly inaccurate bow instead
             if (ownerItems == null && ((PersistentProjectileEntity) (Object) this).getOwner() != null)
                 ownerItems = ((PersistentProjectileEntity) (Object) this).getOwner().getItemsEquipped();
             if (ownerItems != null)

@@ -41,7 +41,7 @@ public abstract class ItemsMixin {
 					randomModifier.applyModifier(stack);
 				else
 					stack.getOrCreateNbt().putBoolean(Constants.HAS_MODIFIER, true); // technically doesn't "have" a modifier, but this is here so that the item cannot obtain a modifier through natural means later
-			} else if (stack.hasNbt() && stack.getNbt().contains(Constants.HAS_MODIFIER) && stack.getNbt().getBoolean(Constants.HAS_MODIFIER) && stack.getNbt().contains(Constants.ORIGINAL_NAME) && stack.getNbt().contains(Constants.ORIGINAL_ITEM)) {
+			} else if (stack.hasNbt() && stack.getNbt().contains(Constants.HAS_MODIFIER) && stack.getNbt().getBoolean(Constants.HAS_MODIFIER) && stack.getNbt().contains(Constants.ORIGINAL_ITEM)) {
 				Item prevItem = Registries.ITEM.get(new Identifier(stack.getNbt().getString(Constants.ORIGINAL_ITEM)));
 				stack.getNbt().putString(Constants.ORIGINAL_ITEM, Registries.ITEM.getId(stack.getItem()).toString()); // update original item
 				// calculate difference in atk speed and atk damage between prevItem and stack.getItem() and apply to attribute modifiers
@@ -55,8 +55,11 @@ public abstract class ItemsMixin {
 		@Inject(method = "setCustomName", at = @At("HEAD"))
 		private void removeModifierNameNBT(Text name, CallbackInfoReturnable<ItemStack> cir) {
 			if (((ItemStack) (Object) this).hasNbt() && ((ItemStack) (Object) this).getNbt().contains(Constants.HAS_MODIFIER) && ((ItemStack) (Object) this).getNbt().getBoolean(Constants.HAS_MODIFIER))
-				((ItemStack) (Object) this).getNbt().putString(Constants.ORIGINAL_NAME, name.getString());
+				//((ItemStack) (Object) this).getNbt().putString(Constants.ORIGINAL_NAME, name.getString());
+				((ItemStack) (Object) this).getNbt().removeSubNbt(Constants.ORIGINAL_NAME); // remove original name as it is no longer applicable
 		}
+
+		// mixin to ItemStack's get rarity function to modify it based off of modifier
 
 		@ModifyReturnValue(method = "getMiningSpeedMultiplier", at = @At("RETURN")) // maybe only apply mining speed boost if original is greater than 1f (1f = not efficient at mining), so that block breaking is fucked up
 		private float modifyMiningSpeed(float original, BlockState state) {

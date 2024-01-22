@@ -46,7 +46,7 @@ public abstract class MobEntityMixin {
     @Redirect(method = "tryAttack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     private boolean modifyDamage(Entity instance, DamageSource source, float damage) {
         if (source.getAttacker() != null) {
-            double totalCritChance = 0.0;
+            double totalCritChance = ModifiersConfig.baseCritChance;
             for (ItemStack equippedItem : source.getAttacker().getItemsEquipped())
                 if (equippedItem.hasNbt() && equippedItem.getNbt().contains(Constants.CRIT))
                     totalCritChance += equippedItem.getNbt().getDouble(Constants.CRIT);

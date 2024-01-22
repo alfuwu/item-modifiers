@@ -18,6 +18,8 @@ public class ModifiersConfig implements ConfigData {
     public double generalModifierChance = 0.75;
     @Comment("Enabling this will show the exact percentages that an item has been modified")
     public boolean showModifierPercentages = true;
+    @Comment("This is Terraria's base critical hit chance")
+    public double baseCritChance = 0.04;
     public static ModifiersConfig getInstance() {
         return AutoConfig.getConfigHolder(ModifiersConfig.class).getConfig();
     }
