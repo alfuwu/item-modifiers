@@ -7,6 +7,8 @@ import com.alfred.modifiers.ModifiersConfig;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -26,8 +28,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.UUID;
+
 import static net.minecraft.item.BowItem.getPullProgress;
 
+@SuppressWarnings("unused")
 public abstract class ItemsMixin {
 	@Mixin(Item.class)
 	public abstract static class ItemMixin {
@@ -44,8 +49,7 @@ public abstract class ItemsMixin {
 			} else if (stack.hasNbt() && stack.getNbt().contains(Constants.HAS_MODIFIER) && stack.getNbt().getBoolean(Constants.HAS_MODIFIER) && stack.getNbt().contains(Constants.ORIGINAL_ITEM)) {
 				Item prevItem = Registries.ITEM.get(new Identifier(stack.getNbt().getString(Constants.ORIGINAL_ITEM)));
 				stack.getNbt().putString(Constants.ORIGINAL_ITEM, Registries.ITEM.getId(stack.getItem()).toString()); // update original item
-				// calculate difference in atk speed and atk damage between prevItem and stack.getItem() and apply to attribute modifiers
-				// too tired to attempt to figure out how to do that currently so imma just leave this here
+				// fix item name
 			}
 		}
 	}
@@ -56,7 +60,7 @@ public abstract class ItemsMixin {
 		private void removeModifierNameNBT(Text name, CallbackInfoReturnable<ItemStack> cir) {
 			if (((ItemStack) (Object) this).hasNbt() && ((ItemStack) (Object) this).getNbt().contains(Constants.HAS_MODIFIER) && ((ItemStack) (Object) this).getNbt().getBoolean(Constants.HAS_MODIFIER))
 				//((ItemStack) (Object) this).getNbt().putString(Constants.ORIGINAL_NAME, name.getString());
-				((ItemStack) (Object) this).getNbt().removeSubNbt(Constants.ORIGINAL_NAME); // remove original name as it is no longer applicable
+				((ItemStack) (Object) this).getNbt().remove(Constants.ORIGINAL_NAME); // remove original name as it is no longer applicable
 		}
 
 		// mixin to ItemStack's get rarity function to modify it based off of modifier
@@ -64,9 +68,26 @@ public abstract class ItemsMixin {
 		@ModifyReturnValue(method = "getMiningSpeedMultiplier", at = @At("RETURN")) // maybe only apply mining speed boost if original is greater than 1f (1f = not efficient at mining), so that block breaking is fucked up
 		private float modifyMiningSpeed(float original, BlockState state) {
 			if (((ItemStack) (Object) this).hasNbt() && ((ItemStack) (Object) this).getNbt().contains(Constants.MINING_SPEED_MULT))
-				original *= ((ItemStack) (Object) this).getNbt().getDouble(Constants.MINING_SPEED_MULT);
-			else if (((ItemStack) (Object) this).hasNbt() && ((ItemStack) (Object) this).getNbt().contains(Constants.MINING_SPEED))
-				original += ((ItemStack) (Object) this).getNbt().getDouble(Constants.MINING_SPEED);
+				original *= ((ItemStack) (Object) this).getNbt().getFloat(Constants.MINING_SPEED_MULT);
+			if (((ItemStack) (Object) this).hasNbt() && ((ItemStack) (Object) this).getNbt().contains(Constants.MINING_SPEED))
+				original += ((ItemStack) (Object) this).getNbt().getFloat(Constants.MINING_SPEED) * 4; // arbitrary multiplication of 4, seems about right
+			return original;
+		}
+	}
+
+	@Mixin(EnchantmentHelper.class)
+	public abstract static class EnchantmentHelperMixin {
+		@ModifyReturnValue(method = "getAttackDamage", at = @At("RETURN"))
+		private static float modifyItemAttackDamage(float original, ItemStack stack, EntityGroup group) {
+			if (stack.hasNbt() && stack.getNbt().contains(Constants.DAMAGE_MULT)) {
+				double originalDamage = stack.getAttributeModifiers(EquipmentSlot.MAINHAND)
+						.get(EntityAttributes.GENERIC_ATTACK_DAMAGE).stream()
+						.filter(modifier -> modifier.getId().equals(UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF")))
+						.findFirst().orElse(new EntityAttributeModifier("", 0.0, null)).getValue();
+				original += originalDamage * (stack.getNbt().getDouble(Constants.DAMAGE_MULT) - 1);
+			}
+			if (stack.hasNbt() && stack.getNbt().contains(Constants.DAMAGE))
+				original += stack.getNbt().getDouble(Constants.DAMAGE);
 			return original;
 		}
 	}

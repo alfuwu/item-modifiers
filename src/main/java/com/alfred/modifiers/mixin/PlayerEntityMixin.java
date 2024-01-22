@@ -2,6 +2,7 @@ package com.alfred.modifiers.mixin;
 
 import com.alfred.modifiers.Constants;
 import com.alfred.modifiers.ModifiersConfig;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -13,11 +14,12 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 
 @Mixin(PlayerEntity.class)
+@SuppressWarnings("unused")
 public abstract class PlayerEntityMixin {
     @Redirect(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     private boolean modifyDamage(Entity instance, DamageSource source, float damage) {
         if (source.getAttacker() != null && source.getAttacker() instanceof PlayerEntity player) {
-            double totalCritChance = ModifiersConfig.baseCritChance;
+            double totalCritChance = ModifiersConfig.getInstance().baseCritChance;
             for (ItemStack equippedItem : source.getAttacker().getItemsEquipped())
                 if (equippedItem.hasNbt() && equippedItem.getNbt().contains(Constants.CRIT))
                     totalCritChance += equippedItem.getNbt().getDouble(Constants.CRIT);
@@ -28,6 +30,16 @@ public abstract class PlayerEntityMixin {
             }
         }
         return instance.damage(source, damage);
+    }
+
+    @ModifyReturnValue(method = "getAttackCooldownProgressPerTick", at = @At("RETURN"))
+    private float modifyAttackSpeed(float original) {
+        ItemStack stack = ((PlayerEntity) (Object) this).getMainHandStack();
+        if (stack.hasNbt() && stack.getNbt().contains(Constants.SPEED_MULT))
+            original /= stack.getNbt().getFloat(Constants.SPEED_MULT);
+        if (stack.hasNbt() && stack.getNbt().contains(Constants.SPEED))
+            original -= stack.getNbt().getFloat(Constants.SPEED) * 20;
+        return Math.max(original, 0.001f);
     }
 
     @Unique

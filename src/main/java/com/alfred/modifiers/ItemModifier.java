@@ -8,6 +8,8 @@ import net.minecraft.text.Text;
 import com.alfred.modifiers.Constants.ModifierType;
 import net.minecraft.util.Identifier;
 
+import java.util.Arrays;
+
 public abstract class ItemModifier {
     private final String name;
     public final ModifierType type;
@@ -23,29 +25,32 @@ public abstract class ItemModifier {
     public void applyModifier(ItemStack itemStack) {
         removeModifier(itemStack);
         NbtCompound modifier = itemStack.getOrCreateNbt();
-        modifier.putString(Constants.ORIGINAL_NAME, itemStack.getName().getString()); // mixin to ItemStack renaming to remove this when renamed
+        modifier.putString(Constants.ORIGINAL_NAME, itemStack.getName().getString());
         modifier.putString(Constants.ORIGINAL_ITEM, Registries.ITEM.getId(itemStack.getItem()).toString());
+        boolean isItalic = itemStack.hasCustomName();
         itemStack.setCustomName(Text.translatable("modifiers.itemmodifier." + getName().toLowerCase())
-                .append(Text.translatable("modifiers.space")))
+                .append(Text.translatable("modifiers.space"))
                 .append(itemStack.getName())
-                .fillStyle(Style.EMPTY.withItalic(false))); // add code to format name to be a red-ish color if modifier is a detrimental one
+                .fillStyle(Style.EMPTY.withItalic(isItalic))); // add code to format name to be a red-ish color if modifier is a detrimental one
         modifier.putBoolean(Constants.HAS_MODIFIER, true);
     }
 
     public static void removeModifier(ItemStack itemStack) {
         if (itemStack.hasNbt() && itemStack.getNbt().contains(Constants.HAS_MODIFIER) && itemStack.getNbt().getBoolean(Constants.HAS_MODIFIER)) {
             if (itemStack.getNbt().contains(Constants.ORIGINAL_NAME))
-                itemStack.setCustomName(Text.literal(itemStack.getNbt().getString(Constants.ORIGINAL_NAME)) // switch to translatable text
+                itemStack.setCustomName(Text.literal(itemStack.getNbt().getString(Constants.ORIGINAL_NAME))
                         .fillStyle(Style.EMPTY.withItalic(itemStack.getItem().getName().equals(Text.literal(itemStack.getNbt().getString(Constants.ORIGINAL_NAME))))));
             for (String NbtID : Constants.values())
                 if (itemStack.getNbt().contains(NbtID))
-                    itemStack.getNbt().removeSubNbt(NbtID); // remove all custom NBT tags this mod implements, if you have a custom modifier implementation and don't want your custom values to be removed, do not include HasModifier:1b in your custom NBT data
+                    itemStack.getNbt().remove(NbtID); // remove all custom NBT tags this mod implements, if you have a custom modifier implementation and don't want your custom values to be removed, do not include HasModifier:1b in your custom NBT data
         }
     }
 
     public boolean canApplyModifier(ItemStack itemStack) { // for custom modifier application logic
         return (itemStack.getNbt() == null || !itemStack.getNbt().getBoolean("HasModifier")) && // make sure a modifier hasn't already been applied to item
-                type == ModifierType.ITEM ||
+                Arrays.stream(ModifiersConfig.getInstance().disabledModifiers).filter(string -> string.equals("modifier.%s".formatted(getName().toLowerCase())))
+                        .findAny().orElse("").isEmpty() &&
+               (type == ModifierType.ITEM ||
                 type == ModifierType.UNIVERSAL && (itemStack.getItem() instanceof ToolItem || itemStack.getItem() instanceof RangedWeaponItem) ||
                 type == ModifierType.COMMON && (itemStack.getItem() instanceof ToolItem || itemStack.getItem() instanceof RangedWeaponItem) ||
                 type == ModifierType.MELEE_TOOL && (itemStack.getItem() instanceof  SwordItem || itemStack.getItem() instanceof AxeItem || itemStack.getItem() instanceof PickaxeItem || itemStack.getItem() instanceof ShovelItem) ||
@@ -63,7 +68,7 @@ public abstract class ItemModifier {
                 type == ModifierType.MINING_TOOL && itemStack.getItem() instanceof MiningToolItem ||
                 type == ModifierType.RANGED && itemStack.getItem() instanceof RangedWeaponItem ||
                 type == ModifierType.ARMOR && itemStack.getItem() instanceof ArmorItem ||
-                type == ModifierType.TRIDENT && itemStack.getItem() instanceof TridentItem;
+                type == ModifierType.TRIDENT && itemStack.getItem() instanceof TridentItem);
     }
 
     public String getName() {

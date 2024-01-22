@@ -98,7 +98,7 @@ public abstract class ProjectileMixin {
         @Redirect(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
         private boolean critDamage(Entity instance, DamageSource source, float damage) {
             if (source.getAttacker() != null && !(instance.isPlayer() && ((PlayerEntity) instance).getAbilities().creativeMode) && ownerItems != null) {
-                double totalCritChance = ModifiersConfig.baseCritChance;
+                double totalCritChance = ModifiersConfig.getInstance().baseCritChance;
                 for (ItemStack equippedItem : source.getAttacker().getItemsEquipped()) {
                     if (equippedItem.hasNbt() && equippedItem.getNbt().contains(Constants.CRIT))
                         totalCritChance += equippedItem.getNbt().getDouble(Constants.CRIT);

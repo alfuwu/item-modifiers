@@ -109,6 +109,12 @@ public class ItemModifierRegistry {
         registerModifier(new FrenzyingModifier());
         registerModifier(new UnrealModifier());
 
+        // Testing modifiers
+        registerModifier(new GiganticModifier());
+        registerModifier(new UngodlyModifier());
+        registerModifier(new ZoomyModifier());
+
+
         // Magic & summoning
         //registerModifier(new MysticModifier());
         //registerModifier(new AdeptModifier());

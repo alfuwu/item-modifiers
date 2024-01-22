@@ -7,7 +7,7 @@ public class Constants {
     public static final String DAMAGE = "AdditionalWeaponDamageModifier";
     public static final String SPEED = "AdditionalWeaponSpeedModifier";
     public static final String DAMAGE_MULT = "AdditionalWeaponDamageMultiplicativeModifier";
-    public static final String SPEED_MULT = "AdditionalWeaponDamageMultiplicativeModifier";
+    public static final String SPEED_MULT = "AdditionalWeaponSpeedMultiplicativeModifier";
     public static final String CRIT = "CritChanceModifier";
     public static final String KNOCKBACK = "KnockbackModifier";
     public static final String MINING_SPEED = "MiningSpeedModifier";
@@ -21,15 +21,13 @@ public class Constants {
     public static final String HAS_MODIFIER = "HasModifier";
     public static final String ORIGINAL_NAME = "OriginalName";
     public static final String ORIGINAL_ITEM = "OriginalItem";
-    public static final UUID MODIFIED_ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("73ff7fb5-5038-44ab-852b-dcf90bd47c0e");
-    public static final UUID MODIFIED_ATTACK_SPEED_MODIFIER_ID = UUID.fromString("9cb40297-aa29-4c8d-bafd-b2ddf02d3427");
 
     public static String[] values() {
         return new String[] {
             DAMAGE, SPEED, DAMAGE_MULT, SPEED_MULT, CRIT, KNOCKBACK, MINING_SPEED, MINING_SPEED_MULT,
             SIZE, VELOCITY, DIVERGENCE,PROJECTILE_DAMAGE, PROJECTILE_DAMAGE_MULT, RANGED_WEAPON_SPEED,
             HAS_MODIFIER, ORIGINAL_NAME, ORIGINAL_ITEM
-        }
+        };
     }
 
     public enum ModifierType {
