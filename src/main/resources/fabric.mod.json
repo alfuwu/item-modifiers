@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "itemmodifiers",
+	"version": "${version}",
+	"name": "Item Modifiers",
+	"description": "Item Modifiers is an implementation of Terraria's modifiers system - also known as a prefix system. It adds (with a configurable chance) a modifier to an item that can modify an item's functionality in different ways.",
+	"authors": [
+		"Alfred"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "MIT",
+	"icon": "assets/itemmodifiers/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+          "com.alfred.modifiers.ModifiersMod"
+		],
+		"client": [
+			"com.alfred.modifiers.ModifiersModClient"
+		]
+	},
+	"mixins": [
+      "itemmodifiers.mixins.json",
+		{
+			"config": "itemmodifiers.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.15.0",
+		"minecraft": "~1.20.4",
+		"java": ">=17",
+		"fabric-api": "*"
+	}
+}

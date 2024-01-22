@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "package": "com.alfred.modifiers.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "com.alfred.modifiers.access.ItemAccessor",
+    "ItemsMixin$BowItemMixin",
+    "ItemsMixin$CrossbowItemMixin",
+    "ItemsMixin$ItemMixin",
+    "ItemsMixin$ItemStackMixin",
+    "LivingEntityMixin",
+    "LootMixin",
+    "MobEntityMixin",
+    "PlayerEntityMixin",
+    "ProjectileMixin$PersistentProjectileEntityMixin",
+    "ProjectileMixin$ProjectileEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+	}
+}
