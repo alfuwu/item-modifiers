@@ -15,6 +15,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.registry.Registries;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -46,21 +47,17 @@ public abstract class ItemsMixin {
 					randomModifier.applyModifier(stack);
 				else
 					stack.getOrCreateNbt().putBoolean(Constants.HAS_MODIFIER, true); // technically doesn't "have" a modifier, but this is here so that the item cannot obtain a modifier through natural means later
-			} else if (stack.hasNbt() && stack.getNbt().contains(Constants.HAS_MODIFIER) && stack.getNbt().getBoolean(Constants.HAS_MODIFIER) && stack.getNbt().contains(Constants.ORIGINAL_ITEM)) {
-				Item prevItem = Registries.ITEM.get(new Identifier(stack.getNbt().getString(Constants.ORIGINAL_ITEM)));
-				stack.getNbt().putString(Constants.ORIGINAL_ITEM, Registries.ITEM.getId(stack.getItem()).toString()); // update original item
-				// fix item name
 			}
 		}
 	}
 
 	@Mixin(ItemStack.class)
 	public abstract static class ItemStackMixin {
-		@Inject(method = "setCustomName", at = @At("HEAD"))
-		private void removeModifierNameNBT(Text name, CallbackInfoReturnable<ItemStack> cir) {
-			if (((ItemStack) (Object) this).hasNbt() && ((ItemStack) (Object) this).getNbt().contains(Constants.HAS_MODIFIER) && ((ItemStack) (Object) this).getNbt().getBoolean(Constants.HAS_MODIFIER))
-				//((ItemStack) (Object) this).getNbt().putString(Constants.ORIGINAL_NAME, name.getString());
-				((ItemStack) (Object) this).getNbt().remove(Constants.ORIGINAL_NAME); // remove original name as it is no longer applicable
+		@ModifyReturnValue(method = "getName", at = @At("RETURN")
+		private void applyModifierToName(Text original) {
+			if (!((ItemStack) (Object) this).hasCustomName() && ((ItemStack) (Object) this).hasNbt() && ((ItemStack) (Object) this).getNbt().contains(Constants.MODIFIER_NAME))
+				original = Text.translatable(((ItemStack) (Object) this).getNbt().getString(Constants.MODIFIER_NAME)).append(ScreenTexts.SPACE).append(original);
+			return original
 		}
 
 		// mixin to ItemStack's get rarity function to modify it based off of modifier

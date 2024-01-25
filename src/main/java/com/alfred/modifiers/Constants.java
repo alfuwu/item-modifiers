@@ -1,9 +1,6 @@
 package com.alfred.modifiers;
 
-import java.util.UUID;
-
 public class Constants {
-    // maybe transfer weapon damage & speed from an item's attributes to an NBT tag?
     public static final String DAMAGE = "AdditionalWeaponDamageModifier";
     public static final String SPEED = "AdditionalWeaponSpeedModifier";
     public static final String DAMAGE_MULT = "AdditionalWeaponDamageMultiplicativeModifier";
@@ -19,14 +16,13 @@ public class Constants {
     public static final String PROJECTILE_DAMAGE_MULT = "ProjectileDamageMultiplicativeModifier";
     public static final String RANGED_WEAPON_SPEED = "RangedWeaponSpeedModifier"; // only supports items extending from BowItem or CrossbowItem, not custom-made ranged weapons unless they implicitly add support for this NBT tag
     public static final String HAS_MODIFIER = "HasModifier";
-    public static final String ORIGINAL_NAME = "OriginalName";
-    public static final String ORIGINAL_ITEM = "OriginalItem";
+    public static final String MODIFIER_NAME = "ModifierName";
 
     public static String[] values() {
         return new String[] {
             DAMAGE, SPEED, DAMAGE_MULT, SPEED_MULT, CRIT, KNOCKBACK, MINING_SPEED, MINING_SPEED_MULT,
             SIZE, VELOCITY, DIVERGENCE,PROJECTILE_DAMAGE, PROJECTILE_DAMAGE_MULT, RANGED_WEAPON_SPEED,
-            HAS_MODIFIER, ORIGINAL_NAME, ORIGINAL_ITEM
+            HAS_MODIFIER, MODIFIER_NAME
         };
     }
 

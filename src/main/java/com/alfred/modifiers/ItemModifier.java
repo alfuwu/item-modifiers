@@ -25,13 +25,7 @@ public abstract class ItemModifier {
     public void applyModifier(ItemStack itemStack) {
         removeModifier(itemStack);
         NbtCompound modifier = itemStack.getOrCreateNbt();
-        modifier.putString(Constants.ORIGINAL_NAME, itemStack.getName().getString());
-        modifier.putString(Constants.ORIGINAL_ITEM, Registries.ITEM.getId(itemStack.getItem()).toString());
-        boolean isItalic = itemStack.hasCustomName();
-        itemStack.setCustomName(Text.translatable("modifiers.itemmodifier." + getName().toLowerCase())
-                .append(Text.translatable("modifiers.space"))
-                .append(itemStack.getName())
-                .fillStyle(Style.EMPTY.withItalic(isItalic))); // add code to format name to be a red-ish color if modifier is a detrimental one
+        modifier.putString(Constants.MODIFIER_NAME, "modifiers.itemmodifier.%s".formatted(getName().toLowerCase()));
         modifier.putBoolean(Constants.HAS_MODIFIER, true);
     }
 

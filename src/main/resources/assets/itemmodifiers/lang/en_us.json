@@ -54,7 +54,6 @@
   "modifiers.itemmodifier.weak": "Weak",
   "modifiers.itemmodifier.zealous": "Zealous",
   "modifiers.itemmodifier.zoomy": "Zoomy",
-  "modifiers.space": " ",
   "modifiers.values.plus": "+%d\\% %s",
   "modifiers.values.minus": "-%d\\% %s"
 }

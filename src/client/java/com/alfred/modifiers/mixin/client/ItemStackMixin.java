@@ -8,11 +8,13 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+import java.util.List;
 import java.util.UUID;
 
 @Mixin(ItemStack.class)
@@ -32,14 +34,18 @@ public class ItemStackMixin {
             val += stack.getNbt().getDouble(Constants.SPEED);
         return val;
     }
-    /*@ModifyVariable(method = "getTooltip", at = @At("STORE"), ordinal = 0)
-    private double modifyAttackSpeed(double originalSpeed, @Local PlayerEntity player, @Local EntityAttributeModifier attribute) {
-        if (player != null) {
-            if (attribute.getId().equals(UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3"))) {
 
+    @Redirect(method = "getTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;hasNbt()Z"))
+    private boolean modifyNbtDisplay(@Local List<Text> list) {
+        if (((ItemStack) (Object) this).hasNbt()) {
+            if (ModifiersConfig.getInstance().showModifierPercentages) {
+                for (String nbtID : Constants.values())
+                    if (((ItemStack) (Object) this).getNbt().contains(nbtID))
+                        list.add(Text.translatable(String.format("modifiers.values.%s", ((ItemStack) (Object) this).getNbt().getDouble(nbtID) < 0 ? "minus" : "plus"), ((ItemStack) (Object) this).getNbt().getDouble(nbtID) * 100, nbtID.toLowerCase()))
             }
+            return true;
+        } else {
+            return false;
         }
-
-        return modifiedSpeed;
-    }*/
+    }
 }
