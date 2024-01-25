@@ -3,8 +3,7 @@
   "package": "com.alfred.modifiers.mixin.client",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "ItemRendererMixin",
-    "ItemStackMixin"
+    "ItemRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

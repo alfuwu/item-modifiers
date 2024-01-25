@@ -20,9 +20,33 @@ public class Constants {
 
     public static String[] values() {
         return new String[] {
-            DAMAGE, SPEED, DAMAGE_MULT, SPEED_MULT, CRIT, KNOCKBACK, MINING_SPEED, MINING_SPEED_MULT,
-            SIZE, VELOCITY, DIVERGENCE,PROJECTILE_DAMAGE, PROJECTILE_DAMAGE_MULT, RANGED_WEAPON_SPEED,
-            HAS_MODIFIER, MODIFIER_NAME
+                DAMAGE, SPEED, DAMAGE_MULT, SPEED_MULT, CRIT, KNOCKBACK, MINING_SPEED, MINING_SPEED_MULT,
+                SIZE, VELOCITY, DIVERGENCE, PROJECTILE_DAMAGE, PROJECTILE_DAMAGE_MULT, RANGED_WEAPON_SPEED,
+                HAS_MODIFIER, MODIFIER_NAME
+        };
+    }
+
+    public static String[] cleanedValues() {
+        return new String[] {
+                CRIT, KNOCKBACK, SIZE, VELOCITY, DIVERGENCE, PROJECTILE_DAMAGE, PROJECTILE_DAMAGE_MULT,
+                RANGED_WEAPON_SPEED
+        };
+    }
+
+    public static String modifierMapping(String modifier) {
+        return switch (modifier) {
+            case DAMAGE, PROJECTILE_DAMAGE -> "damage";
+            case SPEED, RANGED_WEAPON_SPEED -> "attack_speed";
+            case DAMAGE_MULT, PROJECTILE_DAMAGE_MULT -> "damage_multiplicative";
+            case SPEED_MULT -> "attack_speed_multiplicative";
+            case CRIT -> "crit_chance";
+            case KNOCKBACK -> "knockback";
+            case MINING_SPEED -> "mining_speed";
+            case MINING_SPEED_MULT -> "mining_speed_multiplicative";
+            case SIZE -> "size";
+            case VELOCITY -> "velocity";
+            case DIVERGENCE -> "divergence";
+            default -> "";
         };
     }
 

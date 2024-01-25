@@ -3,6 +3,7 @@ package com.alfred.modifiers;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import com.alfred.modifiers.Constants.ModifierType;
@@ -30,18 +31,14 @@ public abstract class ItemModifier {
     }
 
     public static void removeModifier(ItemStack itemStack) {
-        if (itemStack.hasNbt() && itemStack.getNbt().contains(Constants.HAS_MODIFIER) && itemStack.getNbt().getBoolean(Constants.HAS_MODIFIER)) {
-            if (itemStack.getNbt().contains(Constants.ORIGINAL_NAME))
-                itemStack.setCustomName(Text.literal(itemStack.getNbt().getString(Constants.ORIGINAL_NAME))
-                        .fillStyle(Style.EMPTY.withItalic(itemStack.getItem().getName().equals(Text.literal(itemStack.getNbt().getString(Constants.ORIGINAL_NAME))))));
+        if (itemStack.hasNbt() && itemStack.getNbt().contains(Constants.HAS_MODIFIER) && itemStack.getNbt().getBoolean(Constants.HAS_MODIFIER))
             for (String NbtID : Constants.values())
                 if (itemStack.getNbt().contains(NbtID))
                     itemStack.getNbt().remove(NbtID); // remove all custom NBT tags this mod implements, if you have a custom modifier implementation and don't want your custom values to be removed, do not include HasModifier:1b in your custom NBT data
-        }
     }
 
     public boolean canApplyModifier(ItemStack itemStack) { // for custom modifier application logic
-        return (itemStack.getNbt() == null || !itemStack.getNbt().getBoolean("HasModifier")) && // make sure a modifier hasn't already been applied to item
+        return (itemStack.getNbt() == null || !itemStack.getNbt().getBoolean(Constants.HAS_MODIFIER)) && // make sure a modifier hasn't already been applied to item
                 Arrays.stream(ModifiersConfig.getInstance().disabledModifiers).filter(string -> string.equals("modifier.%s".formatted(getName().toLowerCase())))
                         .findAny().orElse("").isEmpty() &&
                (type == ModifierType.ITEM ||

@@ -114,7 +114,6 @@ public class ItemModifierRegistry {
         registerModifier(new UngodlyModifier());
         registerModifier(new ZoomyModifier());
 
-
         // Magic & summoning
         //registerModifier(new MysticModifier());
         //registerModifier(new AdeptModifier());
