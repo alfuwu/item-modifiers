@@ -32,9 +32,9 @@ public abstract class ItemModifier {
 
     public static void removeModifier(ItemStack itemStack) {
         if (itemStack.hasNbt() && itemStack.getNbt().contains(Constants.HAS_MODIFIER) && itemStack.getNbt().getBoolean(Constants.HAS_MODIFIER))
-            for (String NbtID : Constants.values())
-                if (itemStack.getNbt().contains(NbtID))
-                    itemStack.getNbt().remove(NbtID); // remove all custom NBT tags this mod implements, if you have a custom modifier implementation and don't want your custom values to be removed, do not include HasModifier:1b in your custom NBT data
+            for (String nbtId : Constants.values())
+                if (itemStack.getNbt().contains(nbtId))
+                    itemStack.getNbt().remove(nbtId); // remove all custom NBT tags this mod implements, if you have a custom modifier implementation and don't want your custom values to be removed, do not include HasModifier:1b in your custom NBT data
     }
 
     public boolean canApplyModifier(ItemStack itemStack) { // for custom modifier application logic

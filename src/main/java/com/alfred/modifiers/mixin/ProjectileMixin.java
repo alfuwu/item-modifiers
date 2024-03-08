@@ -33,7 +33,7 @@ public abstract class ProjectileMixin {
     public abstract static class ProjectileEntityMixin implements ProjectileMixinAccessor {
         @Unique protected Iterable<ItemStack> ownerItems = null;
         @Override
-        public Iterable<ItemStack> getOwnerItems() {
+        public Iterable<ItemStack> itemModifiers$getOwnerItems() {
             return ownerItems;
         }
         @Shadow private Entity owner;

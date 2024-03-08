@@ -23,7 +23,7 @@ public class LootMixin {
     private void applyLootModifiers(Inventory inventory, LootContextParameterSet parameters, long seed, CallbackInfo ci, @Local Random random) {
         for (int i = 0; i < inventory.size(); ++i) {
             if (!inventory.getStack(i).isEmpty()) {
-                ItemStack stack = ((LootableInventory) this).getStack(i);
+                ItemStack stack = inventory.getStack(i);
                 if (random.nextFloat() < ModifiersConfig.getInstance().generalModifierChance * (1 + parameters.getLuck())) {
                     ItemModifier randomModifier = ItemModifierRegistry.getRandomModifier(stack);
                     if (randomModifier != null)

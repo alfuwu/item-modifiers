@@ -66,11 +66,8 @@ public abstract class ItemsMixin {
 	@Mixin(ItemStack.class)
 	public abstract static class ItemStackMixin {
 		@Shadow @Nullable public abstract NbtCompound getNbt();
-
 		@Shadow public abstract boolean hasNbt();
-
 		@Shadow public abstract Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot);
-
 		@Shadow public abstract boolean hasCustomName();
 
 		@ModifyReturnValue(method = "getName", at = @At("RETURN"))
@@ -97,17 +94,15 @@ public abstract class ItemsMixin {
 
 		@Inject(method = "getTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;appendEnchantments(Ljava/util/List;Lnet/minecraft/nbt/NbtList;)V"))
 		private void appendModifiers(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> cir, @Local List<Text> tooltip) {
-			if (this.hasNbt()) {
-				if (ModifiersConfig.getInstance().showModifierPercentages) {
-					for (String nbtID : Constants.cleanedValues()) {
-						if (this.getNbt().contains(nbtID, 5) || this.getNbt().contains(nbtID, 6)) {
-							double value = Math.round((this.getNbt().getDouble(nbtID) * 100) - (Constants.modifierMapping(nbtID).equals("crit_chance") ? 0 : 100));
-							tooltip.add(Text.translatable(
-									"modifiers.values.%s".formatted(value < 0 ? "minus" : "plus"),
-									new DecimalFormat("#,###.##").format(value < 0 ? value * -1 : value),
-									Text.translatable("modifiers.constants.%s".formatted(Constants.modifierMapping(nbtID))).getString()
-							).formatted(Formatting.DARK_PURPLE));
-						}
+			if (this.hasNbt() && ModifiersConfig.getInstance().showModifierPercentages) {
+				for (String nbtId : Constants.cleanedValues()) {
+					if (this.getNbt().contains(nbtId, 5) || this.getNbt().contains(nbtId, 6)) {
+						double value = (this.getNbt().getDouble(nbtId) * 100) - (Constants.modifierMapping(nbtId).equals("crit_chance") ? 0 : 100);
+						tooltip.add(Text.translatable(
+								"modifiers.values.%s".formatted(value < 0 ? "minus" : "plus"),
+								new DecimalFormat("#,###.##").format(value < 0 ? value * -1 : value),
+								Text.translatable("modifiers.constants.%s".formatted(Constants.modifierMapping(nbtId))).getString()
+						).formatted(Formatting.DARK_PURPLE));
 					}
 				}
 			}
