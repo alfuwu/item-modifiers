@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(LivingEntity.class)
 @SuppressWarnings("unused")
+@Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin {
     @Unique
     private static double applyKnockback(double strength, @Nullable Iterable<ItemStack> iterable) {

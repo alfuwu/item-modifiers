@@ -1,6 +1,9 @@
 package com.alfred.modifiers.modifiers;
 
 import com.alfred.modifiers.Constants;
+import com.alfred.modifiers.ItemModifier;
+import com.alfred.modifiers.ItemModifierRegistry;
+import com.alfred.modifiers.ModifiersConfig;
 import com.google.common.collect.Multimap;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -31,6 +34,16 @@ public abstract class Util {
                 stack.getOrCreateNbt().putFloat(Constants.PROJECTILE_DAMAGE, damage);
             if (speedMult != null || speed != null)
                 stack.getOrCreateNbt().putFloat(Constants.RANGED_WEAPON_SPEED, (1 + (speed != null ? speed : 0)) * (speedMult != null ? speedMult : 1));
+        }
+    }
+
+    public static void addModifier(ItemStack stack) {
+        if (Math.random() < ModifiersConfig.getInstance().craftedItemModifierChance && !(stack.hasNbt() && stack.getNbt().contains(Constants.HAS_MODIFIER) && stack.getNbt().getBoolean(Constants.HAS_MODIFIER))) {
+            // get a random modifier that's applicable to this item
+            ItemModifier randomModifier = ItemModifierRegistry.getRandomModifier(stack);
+
+            if (randomModifier != null)
+                randomModifier.applyModifier(stack);
         }
     }
 }

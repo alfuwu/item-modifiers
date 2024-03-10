@@ -3,10 +3,11 @@
   "package": "com.alfred.modifiers.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "CraftingResultSlotMixin",
+    "CraftingScreenHandlerMixin",
     "ItemsMixin$BowItemMixin",
     "ItemsMixin$CrossbowItemMixin",
     "ItemsMixin$EnchantmentHelperMixin",
-    "ItemsMixin$ItemMixin",
     "ItemsMixin$ItemStackMixin",
     "LivingEntityMixin",
     "LootMixin",

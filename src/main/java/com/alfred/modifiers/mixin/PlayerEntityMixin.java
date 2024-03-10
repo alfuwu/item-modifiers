@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 
-@Mixin(PlayerEntity.class)
 @SuppressWarnings("unused")
+@Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin {
     @Redirect(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     private boolean modifyDamage(Entity instance, DamageSource source, float damage) {

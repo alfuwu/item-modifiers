@@ -47,22 +47,6 @@ import static net.minecraft.item.BowItem.getPullProgress;
 
 @SuppressWarnings("unused")
 public abstract class ItemsMixin {
-	@Mixin(Item.class)
-	public abstract static class ItemMixin {
-		@Inject(method = "onCraft", at = @At("RETURN"))
-		private void applyRandomModifier(ItemStack stack, World world, CallbackInfo ci) {
-			if (Math.random() < ModifiersConfig.getInstance().craftedItemModifierChance && !(stack.hasNbt() && stack.getNbt().contains(Constants.HAS_MODIFIER) && stack.getNbt().getBoolean(Constants.HAS_MODIFIER))) {
-				// get a random modifier that's applicable to this item
-				ItemModifier randomModifier = ItemModifierRegistry.getRandomModifier(stack);
-
-				if (randomModifier != null)
-					randomModifier.applyModifier(stack);
-				else
-					stack.getOrCreateNbt().putBoolean(Constants.HAS_MODIFIER, true); // technically doesn't "have" a modifier, but this is here so that the item cannot obtain a modifier through natural means later
-			}
-		}
-	}
-
 	@Mixin(ItemStack.class)
 	public abstract static class ItemStackMixin {
 		@Shadow @Nullable public abstract NbtCompound getNbt();
